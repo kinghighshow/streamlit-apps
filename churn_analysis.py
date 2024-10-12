@@ -2,13 +2,13 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import xgboost.XGBClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 
 # Load the dataset
-df = pd.read_csv("Downloads/Expresso_churn_dataset_cleaned.csv")
+df = pd.read_csv("streamlit-apps/Expresso_churn_dataset_cleaned.csv")
 
 # Assuming 'target' column contains the labels for whether a person has a bank account or not
 X = df.drop(columns=['CHURN'])  # Features
@@ -24,8 +24,15 @@ X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
 # Train the classifier
-xgb = xgboost.XGBClassifier()
-xgb.fit(X_train_scaled, y_train)
+gb_clf = GradientBoostingClassifier(
+    learning_rate=0.1,
+    max_depth=4,
+    min_samples_leaf=4,
+    min_samples_split=5,
+    n_estimators=100,
+    subsample=1.0
+)
+gb_clf.fit(X_train_scaled, y_train)
 
 # Streamlit app title
 st.title("Customer Churn Prediction")
@@ -71,8 +78,8 @@ def user_input_features():
 input_df = user_input_features()
 
 # Make predictions based on user input
-prediction = xgb.predict(input_df)
-prediction_proba = xgb.predict_proba(input_df)
+prediction = gb_clf.predict(input_df)
+prediction_proba = gb_clf.predict_proba(input_df)
 
 # Display the prediction results
 st.subheader('Prediction')
@@ -83,7 +90,7 @@ st.write(prediction_proba)
 
 # Feature importance visualization
 st.subheader('Feature Importance')
-importance = xgb.feature_importances_
+importance = gb_clf.feature_importances_
 features = X.columns
 plt.barh(features, importance)
 st.pyplot(plt)
