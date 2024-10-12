@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 
 # Load the dataset
-df = pd.read_csv("Downloads/financial_institution_cleaned1.csv")
+df = pd.read_csv("streamlit-apps/financial_institution_cleaned1.csv")
 
 # Assuming 'target' column contains the labels for whether a person has a bank account or not
 X = df.drop(columns=['bank_account'])  # Features
